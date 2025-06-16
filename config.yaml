@@ -1,0 +1,68 @@
+# Data preprocessing parameters
+preprocessing:
+  lookback_window: 60  # seconds
+  prediction_window: 10  # seconds
+  test_size: 0.2
+  random_state: 42
+
+# Feature engineering parameters
+feature_engineering:
+  statistical_features:
+    - mean
+    - std
+    - min
+    - max
+    - median
+    - q25
+    - q75
+    - iqr
+    - skewness
+    - kurtosis
+  advanced_features:
+    - mean_roc
+    - std_roc
+    - max_roc
+    - volatility
+    - ma_diff
+
+# Model parameters
+models:
+  random_forest:
+    n_estimators: 100
+    max_depth: null
+    min_samples_split: 2
+    min_samples_leaf: 1
+    random_state: 42
+
+  neural_network:
+    layers:
+      - units: 64
+        activation: relu
+        dropout: 0.2
+      - units: 32
+        activation: relu
+        dropout: 0.2
+      - units: 16
+        activation: relu
+      - units: 1
+        activation: sigmoid
+    optimizer:
+      name: Adam
+      learning_rate: 0.001
+    training:
+      epochs: 50
+      batch_size: 32
+      device: auto  # 'cuda' or 'cpu'
+
+# Transfer learning parameters
+transfer_learning:
+  test_size: 0.2
+  random_state: 42
+
+# Paths
+paths:
+  dataset:
+    first_capture: "dataset/1st_capture"
+    second_capture: "dataset/2nd_capture"
+  results: "results"
+  models: "models" 
