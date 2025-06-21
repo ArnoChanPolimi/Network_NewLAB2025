@@ -13,7 +13,7 @@ from model_training import ModelTrainer, train_neural_network
 from visualization import Visualizer
 
 def test_main():
-    # 设置随机种子以确保结果可重现
+    # 设置随机种子以确保结果可重现!!!
     np.random.seed(42)
     
     # 创建必要的目录
