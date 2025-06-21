@@ -28,7 +28,7 @@ def test_main():
     
     # 1. 加载单个CSV文件
     print("\n1. 加载数据...")
-    csv_path = 'dataset/1st_capture/cpe_a-cpe_b-fiber.csv'  # 只使用第一个文件
+    csv_path = '../dataset/1st_capture/cpe_a-cpe_b-fiber.csv'  # 只使用第一个文件
     df = load_data(csv_path)
     print(f"加载数据完成，数据形状: {df.shape}")
     
@@ -52,6 +52,10 @@ def test_main():
     )
     print(f"训练集大小: {X_train.shape}, 测试集大小: {X_test.shape}")
     
+    print(f"全数据集丢包样本数: {np.sum(y)} / {len(y)}")  
+    print(f"训练集丢包样本数: {np.sum(y_train)} / {len(y_train)}")  
+    print(f"测试集丢包样本数: {np.sum(y_test)} / {len(y_test)}")  
+
     # 5. 训练随机森林模型
     print("\n5. 训练随机森林模型...")
     trainer.train_random_forest(X_train, y_train)
@@ -69,6 +73,16 @@ def test_main():
     print("随机森林模型指标:")
     for metric, value in rf_metrics.items():
         print(f"{metric}: {value:.4f}")
+
+    cm = confusion_matrix(y_test, rf_predictions)
+    tn, fp, fn, tp = cm.ravel()
+
+    print("随机森林模型预测结果详细统计：")
+    print(f"总丢包数(测试集真实正样本): {tp + fn}")
+    print(f"成功预测丢包数(True Positives): {tp}")
+    print(f"遗漏丢包数(False Negatives): {fn}")
+    print(f"误报正常包数(False Positives): {fp}")
+    print(f"正确预测正常包数(True Negatives): {tn}")
     
     # 6. 训练神经网络模型
     print("\n6. 训练神经网络模型...")
@@ -97,6 +111,17 @@ def test_main():
     print("神经网络模型指标:")
     for metric, value in nn_metrics.items():
         print(f"{metric}: {value:.4f}")
+
+    cm_nn = confusion_matrix(y_test, nn_predictions)
+    tn, fp, fn, tp = cm_nn.ravel()
+
+    print("神经网络模型预测结果详细统计：")
+    print(f"总丢包数(测试集真实正样本): {tp + fn}")
+    print(f"成功预测丢包数 (True Positives): {tp}")
+    print(f"遗漏丢包数(False Negatives): {fn}")
+    print(f"误报正常包数(False Positives): {fp}")
+    print(f"正确预测正常包数(True Negatives): {tn}")
+
     
     # 7. 生成可视化
     print("\n7. 生成可视化...")
