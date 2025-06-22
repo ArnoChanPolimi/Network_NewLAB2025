@@ -11,6 +11,8 @@ from preprocessing import load_data, clean_data, create_sliding_windows, extract
 from feature_engineering import create_feature_matrix
 from model_training import ModelTrainer, train_neural_network
 from visualization import Visualizer
+from feature_engineering import extract_time_domain_features, extract_advanced_features
+
 
 def test_main():
     # 设置随机种子以确保结果可重现!!!
@@ -42,7 +44,10 @@ def test_main():
     features_dict = create_feature_matrix(df['delay_ms'].values)
     X = features_dict['feature_matrix']
     y = features_dict['labels']
-    feature_names = [f'feature_{i}' for i in range(X.shape[1])]
+    # feature_names = [f'feature_{i}' for i in range(X.shape[1])]
+    # 得到真实特征名字
+    feature_names = list(extract_time_domain_features(np.zeros(10)).keys()) + list(extract_advanced_features(np.zeros(10)).keys())
+
     print(f"特征工程完成，特征数量: {X.shape[1]}")
     
     # 4. 数据集分割
@@ -58,7 +63,7 @@ def test_main():
 
     # 5. 训练随机森林模型
     print("\n5. 训练随机森林模型...")
-    trainer.train_random_forest(X_train, y_train)
+    trainer.train_random_forest(X_train, y_train, feature_names)
     rf_model = trainer.rf_model
     rf_predictions = rf_model.predict(X_test)
     rf_proba = rf_model.predict_proba(X_test)[:, 1]
@@ -70,6 +75,8 @@ def test_main():
         'recall': recall_score(y_test, rf_predictions),
         'f1': f1_score(y_test, rf_predictions)
     }
+
+    print("-------------------")
     print("随机森林模型指标:")
     for metric, value in rf_metrics.items():
         print(f"{metric}: {value:.4f}")
@@ -83,6 +90,14 @@ def test_main():
     print(f"遗漏丢包数(False Negatives): {fn}")
     print(f"误报正常包数(False Positives): {fp}")
     print(f"正确预测正常包数(True Negatives): {tn}")
+    print("------------------------------------")
+    
+    # 训练完模型 rf_model 后
+    importances = rf_model.feature_importances_
+
+    print("每个特征的权重(重要性), 共计14种特征:")
+    for name, importance in zip(feature_names, importances):
+        print(f"{name}: {importance:.4f}")
     
     # 6. 训练神经网络模型
     print("\n6. 训练神经网络模型...")

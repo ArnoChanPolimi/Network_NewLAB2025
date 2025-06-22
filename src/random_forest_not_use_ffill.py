@@ -22,7 +22,7 @@ def generate_features(df, lookback, pred_window):
     labels = df['is_packet_loss'].values
 
     for i in range(lookback, len(df) - pred_window):
-        # 跳过目标窗口中有缺失的样本（不做预测）
+        # 跳过目标窗口中有缺失的样本(不做预测)
         if np.any(np.isnan(delay[i:i + pred_window])):
             continue
 
@@ -93,7 +93,7 @@ print(classification_report(y_test, y_pred, digits=4))
 
 # === False Negative Mapping to CSV Rows ===
 fn_indices = np.where((y_test == 1) & (y_pred == 0))[0]
-print("\n=== False Negative 样本原始 CSV 行号（窗口起点）===")
+print("\n=== False Negative 样本原始 CSV 行号(窗口起点)===")
 for i in fn_indices:
     print(f"测试集样本 {i} → 原始窗口起点：{idx_test[i]}")
 

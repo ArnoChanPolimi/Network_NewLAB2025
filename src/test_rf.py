@@ -107,6 +107,7 @@ def test_random_forest():
     importances = rf_model.feature_importances_
     indices = np.argsort(importances)[::-1]
     
+    print("--------------  rf  -----------------")
     print("\nTop 10 Most Important Features:")
     for i in range(10):
         print(f"{feature_names[indices[i]]}: {importances[indices[i]]:.4f}")

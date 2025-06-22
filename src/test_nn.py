@@ -24,7 +24,7 @@ if not all_delay_series:
     raise RuntimeError("No valid data found in any files")
 delay_values = np.concatenate(all_delay_series)
 
-# 选定窗口参数（可根据sweep结果调整）
+# 选定窗口参数(可根据sweep结果调整)
 N = 10
 X = 3
 features_dict = create_feature_matrix(delay_values, lookback_window=N, prediction_window=X)

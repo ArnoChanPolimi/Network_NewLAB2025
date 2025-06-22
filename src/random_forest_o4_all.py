@@ -51,7 +51,7 @@ def generate_dataset_with_emphasized_tail(df, lookback, pred_window):
         rolling_std_last_5 = np.std(window[-5:])
         rolling_mean_diff_last_3 = (window[-1] - window[-2]) + (window[-2] - window[-3])
 
-        # ✅ 尾部特征加权（通过重复）
+        # ✅ 尾部特征加权(通过重复)
         tail_features = [
             rolling_std_last_5, rolling_mean_diff_last_3
         ]
@@ -94,7 +94,7 @@ print(classification_report(y_test, y_pred, digits=4))
 
 # === False Negatives Mapping to CSV Rows ===
 #fn_indices = np.where((y_test == 1) & (y_pred == 0))[0]
-#print("\n=== False Negative 样本原始 CSV 行号（窗口起点）===")
+#print("\n=== False Negative 样本原始 CSV 行号(窗口起点)===")
 #for i in fn_indices:
 #    print(f"测试集样本 {i} → 原始窗口起点：{idx_test[i]}")
 

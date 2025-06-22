@@ -87,7 +87,7 @@ print(classification_report(y_test, y_pred, digits=4))
 
 # === False Negatives Mapping to CSV Rows ===
 fn_indices = np.where((y_test == 1) & (y_pred == 0))[0]
-print("\n=== False Negative 样本原始 CSV 行号（窗口起点）===")
+print("\n=== False Negative 样本原始 CSV 行号(窗口起点)===")
 for i in fn_indices:
     print(f"测试集样本 {i} → 原始窗口起点：{idx_test[i]}")
 

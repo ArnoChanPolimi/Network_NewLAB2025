@@ -60,7 +60,7 @@ class ModelTrainer:
         self.nn_model = None
         self.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         
-    def train_random_forest(self, X: np.ndarray, y: np.ndarray) -> Dict[str, Any]:
+    def train_random_forest(self, X: np.ndarray, y: np.ndarray, feature_names=None) -> Dict[str, Any]:
         """
         Train a Random Forest classifier with optimized parameters.
         
@@ -139,9 +139,16 @@ class ModelTrainer:
         importances = self.rf_model.feature_importances_
         indices = np.argsort(importances)[::-1]
         
-        print("\nTop 10 Most Important Features:")
+        print("--------------------------------------")
+        print("\nTop 10 Most Important Features are:")
+        # for i in range(min(10, len(importances))):
+        #     print(f"feature_{indices[i]}: {importancess[indices[i]]:.4f}")
+
         for i in range(min(10, len(importances))):
-            print(f"feature_{indices[i]}: {importances[indices[i]]:.4f}")
+            if feature_names is not None:
+                print(f"{feature_names[indices[i]]}: {importances[indices[i]]:.4f}")
+            else:
+                print(f"feature_{indices[i]}: {importances[indices[i]]:.4f}")
         
         return {
             'metrics': metrics,

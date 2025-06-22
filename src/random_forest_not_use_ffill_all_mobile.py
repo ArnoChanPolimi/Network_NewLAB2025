@@ -10,8 +10,16 @@ import matplotlib.pyplot as plt
 # === CONFIGURATION ===
 LOOKBACK = 10
 PRED_WINDOW = 1
-ROOT_DIRS = ["dataset/1st_capture", "dataset/2nd_capture"]
+# ROOT_DIRS = ["dataset/1st_capture", "dataset/2nd_capture"]
+# FILENAME_PATTERN = "*-mobile.csv"
+
+PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_DIRS = [
+    os.path.join(PROJECT_ROOT, "dataset", "1st_capture"),
+    os.path.join(PROJECT_ROOT, "dataset", "2nd_capture")
+]
 FILENAME_PATTERN = "*-mobile.csv"
+
 
 # === Load and Combine All Matching Files ===
 all_files = []
@@ -24,6 +32,12 @@ for file in all_files:
     df = pd.read_csv(file)
     df['source_file'] = os.path.basename(file)  # Track file origin if needed
     combined_df = pd.concat([combined_df, df], ignore_index=True)
+
+print("\n========= Combined DF Columns =========")
+print(combined_df.columns.tolist())
+
+print("\n========= Combined DF Head =========")
+print(combined_df.head(100))
 
 # === Preprocess ===
 combined_df['delay_ms'] = pd.to_numeric(combined_df['delay_ms'], errors='coerce')
@@ -86,9 +100,9 @@ X_train, X_test, y_train, y_test, idx_train, idx_test = train_test_split(
 
 # === Train Random Forest ===
 model = RandomForestClassifier(
-    n_estimators=300,
-    max_depth=12,
-    min_samples_leaf=3,
+    n_estimators=50,#300,
+    max_depth=8,#12,
+    min_samples_leaf=5,#3,
     class_weight='balanced_subsample',
     random_state=42
 )
@@ -104,7 +118,7 @@ print(classification_report(y_test, y_pred, digits=4))
 
 # === False Negatives Mapping ===
 fn_indices = np.where((y_test == 1) & (y_pred == 0))[0]
-print("\n=== False Negative 样本原始 CSV 行号（窗口起点）===")
+print("\n=== False Negative 样本原始 CSV 行号(窗口起点)===")
 for i in fn_indices:
     print(f"测试集样本 {i} → 原始窗口起点：{idx_test[i]}")
 
@@ -118,6 +132,23 @@ feature_names = [
     "rolling_std_last_5", "rolling_mean_diff_last_3"
 ]
 
+indices = np.argsort(importances)[::-1]
+print("\nAll Features Importance:")
+for i in range(len(importances)):
+    print(f"{feature_names[indices[i]]}: {importances[indices[i]]:.4f}")
+
+# 创建文件夹，如果不存在
+script_dir = os.path.dirname(os.path.abspath(__file__))  # 脚本所在目录（就是你说的同级目录）
+# 输出文件夹：脚本同级目录下的 output_figure
+output_dir = os.path.join(script_dir, "output_figure")
+
+# 如果文件夹不存在就创建
+os.makedirs(output_dir, exist_ok=True)
+# 例如保存图片：
+output_path = os.path.join(output_dir, "rf_Mobile_feature_importance.png")
+
+
+
 plt.figure(figsize=(13, 5))
 plt.bar(range(len(importances)), importances)
 plt.xticks(ticks=range(len(importances)), labels=feature_names, rotation=45)
@@ -126,4 +157,12 @@ plt.xlabel("Feature")
 plt.ylabel("Importance")
 plt.tight_layout()
 plt.grid(True, axis='y', linestyle='--', alpha=0.5)
-plt.show()
+
+# 保存图像
+plt.savefig(output_path)
+plt.close()
+
+print(f"特征重要性图已保存到：{output_path}")
+
+# plt.show()
+# plt.close()
